@@ -15,7 +15,7 @@ const RootLayout = () => {
       <Stack.Screen
         name="categories"
         options={{
-          headerShown: true,
+          headerShown: false,
           title: "Categories",
         }}
       />
