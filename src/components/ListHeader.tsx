@@ -11,7 +11,9 @@ import React from "react";
 import { Link } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import { CATEGORIES } from "../../assets/categories";
+import { useCartStore } from "../store/cartStore";
 const ListHeader = () => {
+  const { getItemCount } = useCartStore();
   return (
     <View style={[styles.headerContainer]}>
       <View style={styles.headerTop}>
@@ -35,7 +37,7 @@ const ListHeader = () => {
                     color={"gray"}
                     style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
                   />
-                  <View style={styles.badgeContainer}>1</View>
+                  <View style={styles.badgeContainer}>{getItemCount()}</View>
                 </View>
               )}
             </Pressable>
