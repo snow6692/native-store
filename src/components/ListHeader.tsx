@@ -37,7 +37,7 @@ const ListHeader = () => {
                     color={"gray"}
                     style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
                   />
-                  <View style={styles.badgeContainer}>{getItemCount()}</View>
+                  <Text style={styles.badgeContainer}>{getItemCount()}</Text>
                 </View>
               )}
             </Pressable>
@@ -148,13 +148,14 @@ const styles = StyleSheet.create({
   badgeContainer: {
     position: "absolute",
     top: -5,
-    right: 10,
+    right: 8,
     backgroundColor: "#1BC464",
     borderRadius: 10,
     width: 20,
     height: 20,
     justifyContent: "center",
     alignItems: "center",
+    textAlign: "center",
   },
   badgeText: {
     color: "white",

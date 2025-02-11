@@ -5,8 +5,8 @@ import { Link } from "expo-router";
 
 const ProductListItem = ({ product }: { product: Product }) => {
   return (
-    <Link asChild href={`product/${product.slug}`}>
-      <View style={styles.item}>
+    <View style={styles.item}>
+      <Link href={`product/${product.slug}`}>
         <View style={styles.itemImageContainer}>
           <Image
             source={product.heroImage}
@@ -18,8 +18,8 @@ const ProductListItem = ({ product }: { product: Product }) => {
           <Text style={styles.itemTitle}>{product.title}</Text>
           <Text style={styles.itemPrice}>{product.price.toFixed(2)}</Text>
         </View>
-      </View>
-    </Link>
+      </Link>
+    </View>
   );
 };
 

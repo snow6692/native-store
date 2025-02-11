@@ -3,6 +3,7 @@ import React from "react";
 import { PRODUCTS } from "../../../assets/products";
 import ProductListItem from "../../components/ProductListItem";
 import ListHeader from "../../components/ListHeader";
+import Auth from "../auth";
 
 const Home = () => {
   return (
