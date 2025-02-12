@@ -1,37 +1,80 @@
 import {
   View,
   Text,
-  TextInput,
   StyleSheet,
   ImageBackground,
+  TextInput,
   TouchableOpacity,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
-import { authSchema } from "../validation/user";
+import * as zod from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-const Auth = () => {
-  const { control, formState, handleSubmit } = useForm<authSchema>({
+import { Redirect, Stack } from "expo-router";
+import { supabase } from "../lib/supabase";
+import { Toast } from "react-native-toast-notifications";
+import { useAuth } from "../providers/auth-providers";
+
+const authSchema = zod.object({
+  email: zod.string().email({ message: "Invalid email address" }),
+  password: zod
+    .string()
+    .min(6, { message: "Password must be at least 6 characters long" }),
+});
+
+export default function Auth() {
+  const { session } = useAuth();
+
+  if (session) return <Redirect href="/" />;
+
+  const { control, handleSubmit, formState } = useForm({
     resolver: zodResolver(authSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
-  const signIn = (values: authSchema) => {
-    console.log(values);
+
+  const signIn = async (data: zod.infer<typeof authSchema>) => {
+    const { error } = await supabase.auth.signInWithPassword(data);
+
+    if (error) {
+      alert(error.message);
+    } else {
+      Toast.show("Signed in successfully", {
+        type: "success",
+        placement: "top",
+        duration: 1500,
+      });
+    }
   };
-  const signUp = (values: authSchema) => {
-    console.log(values);
+
+  const signUp = async (data: zod.infer<typeof authSchema>) => {
+    const { error } = await supabase.auth.signUp(data);
+
+    if (error) {
+      alert(error.message);
+    } else {
+      Toast.show("Signed up successfully", {
+        type: "success",
+        placement: "top",
+        duration: 1500,
+      });
+    }
   };
+
   return (
     <ImageBackground
+      source={{
+        uri: "https://images.pexels.com/photos/682933/pexels-photo-682933.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      }}
       style={styles.backgroundImage}
-      source={require("../../assets/images/auth.jpg")}
     >
       <View style={styles.overlay} />
+
       <View style={styles.container}>
         <Text style={styles.title}>Welcome</Text>
-        <Text style={styles.subtitle}> Sign in to continue</Text>
+        <Text style={styles.subtitle}>Please Authenticate to continue</Text>
+
         <Controller
           control={control}
           name="email"
@@ -78,6 +121,7 @@ const Auth = () => {
             </>
           )}
         />
+
         <TouchableOpacity
           style={styles.button}
           onPress={handleSubmit(signIn)}
@@ -85,7 +129,6 @@ const Auth = () => {
         >
           <Text style={styles.buttonText}>Sign In</Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           style={[styles.button, styles.signUpButton]}
           onPress={handleSubmit(signUp)}
@@ -96,14 +139,11 @@ const Auth = () => {
       </View>
     </ImageBackground>
   );
-};
+}
 
-export default Auth;
 const styles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
-    width: "100%",
-    height: "100%",
     resizeMode: "cover",
     justifyContent: "center",
     alignItems: "center",
