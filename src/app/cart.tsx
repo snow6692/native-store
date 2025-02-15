@@ -9,16 +9,9 @@ import {
   Image,
 } from "react-native";
 import React from "react";
-import { useCartStore } from "../store/cartStore";
+import { CartItemType, useCartStore } from "../store/cartStore";
 import { StatusBar } from "expo-status-bar";
 
-type CartItemType = {
-  id: number;
-  title: string;
-  image: any;
-  price: number;
-  quantity: number;
-};
 type CartItemProps = {
   item: CartItemType;
   onRemove: (id: number) => void;
@@ -33,7 +26,7 @@ const CartItem = ({
 }: CartItemProps) => {
   return (
     <View style={styles.cartItem}>
-      <Image source={item.image} style={styles.itemImage} />
+      <Image source={{ uri: item.heroImage }} style={styles.itemImage} />
       <View style={styles.itemDetails}>
         <Text style={styles.itemDetails}>{item.title}</Text>
         <Text style={styles.itemDetails}>{item.price.toFixed(2)}</Text>

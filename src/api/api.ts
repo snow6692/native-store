@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "../lib/supabase";
+import { useAuth } from "../providers/auth-providers";
 
 //All products and categories for home screen
 export const getProductsAndCategories = () => {
@@ -20,8 +21,7 @@ export const getProductsAndCategories = () => {
   });
 };
 
-
-
+// Product page
 export const useGetProduct = (slug: string) => {
   return useQuery({
     queryKey: ["product", slug],
@@ -68,6 +68,29 @@ export const getCategoryAndProducts = (categorySlug: string) => {
       }
 
       return { category, products };
+    },
+  });
+};
+
+export const getMyOrders = () => {
+  const {
+    user: { id },
+  } = useAuth();
+  return useQuery({
+    queryKey: ["orders", id],
+
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("order")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .eq("user", id);
+      if (error)
+        throw new Error(
+          "An error occurred while fetching orders " + error.message
+        );
+
+      return data;
     },
   });
 };

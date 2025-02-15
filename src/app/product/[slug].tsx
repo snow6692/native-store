@@ -22,7 +22,7 @@ const ProductDetails = () => {
   const carItems = items.find((item) => item.id === product?.id);
   const initialQuantity = carItems ? carItems.quantity : 1;
   const [quantity, setQuantity] = useState(initialQuantity);
-  
+
   if (isLoading) return <ActivityIndicator />;
   if (error) return <Text>Error: {error.message}</Text>;
   if (!product) return <Redirect href="/404" />;
@@ -49,9 +49,10 @@ const ProductDetails = () => {
     addItem({
       id: product.id,
       title: product.title,
-      image: product.heroImage,
+      heroImage: product.heroImage,
       price: product.price,
       quantity,
+      maxQuantity: product.maxQuantity,
     });
     toast.show("Added to cart", {
       placement: "top",
