@@ -1,6 +1,6 @@
 import { Redirect, Stack, useLocalSearchParams } from "expo-router";
 import {
-  Button,
+  ActivityIndicator,
   FlatList,
   Image,
   StyleSheet,
@@ -9,20 +9,23 @@ import {
   View,
 } from "react-native";
 import { useToast } from "react-native-toast-notifications";
-import { PRODUCTS } from "../../../assets/products";
 import { useCartStore } from "../../store/cartStore";
 import { useState } from "react";
+import { useGetProduct } from "../../api/api";
 
 const ProductDetails = () => {
   const { slug } = useLocalSearchParams<{ slug: string }>();
+  const { data: product, error, isLoading } = useGetProduct(slug);
   const toast = useToast();
-  const product = PRODUCTS.find((p) => p.slug === slug);
-  if (!product) return <Redirect href={"/404"} />;
-
   const { addItem, items, incrementItem, decrementItem } = useCartStore();
-  const carItems = items.find((item) => item.id === product.id);
+
+  const carItems = items.find((item) => item.id === product?.id);
   const initialQuantity = carItems ? carItems.quantity : 1;
   const [quantity, setQuantity] = useState(initialQuantity);
+  
+  if (isLoading) return <ActivityIndicator />;
+  if (error) return <Text>Error: {error.message}</Text>;
+  if (!product) return <Redirect href="/404" />;
 
   const increaseQuantity = () => {
     if (quantity < product.maxQuantity) {
@@ -62,7 +65,7 @@ const ProductDetails = () => {
     <View style={styles.container}>
       <Stack.Screen options={{ title: product.title }} />
       <Image
-        source={product.heroImage}
+        source={{ uri: product.heroImage }}
         alt={`${product.title}'s images`}
         style={styles.heroImage}
       />
@@ -83,7 +86,7 @@ const ProductDetails = () => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.imagesContainer}
           renderItem={({ item }) => (
-            <Image source={item} style={styles.image} />
+            <Image source={{ uri: item }} style={styles.image} />
           )}
         />
         <View style={styles.buttonContainer}>

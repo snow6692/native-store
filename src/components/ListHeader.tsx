@@ -10,10 +10,11 @@ import {
 import React from "react";
 import { Link } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
-import { CATEGORIES } from "../../assets/categories";
+
 import { useCartStore } from "../store/cartStore";
 import { supabase } from "../lib/supabase";
-const ListHeader = () => {
+import { Tables } from "../types/database.types";
+const ListHeader = ({ categories }: { categories: Tables<"category">[] }) => {
   const { getItemCount } = useCartStore();
 
   const handleSignout = async () => {
@@ -66,7 +67,7 @@ const ListHeader = () => {
         <FlatList
           horizontal
           showsHorizontalScrollIndicator={false}
-          data={CATEGORIES}
+          data={categories}
           keyExtractor={(category) => category.slug}
           renderItem={({ item }) => (
             <Link href={`categories/${item.slug}`} asChild>

@@ -12,10 +12,10 @@ function TabBarIcon(props: {
   return <FontAwesome size={24} {...props} style={{ color: "#1BC464" }} />;
 }
 const TabsLayout = () => {
-  const { session, mounting } = useAuth();
+  // const { session, mounting } = useAuth();
 
-  if (mounting) return <ActivityIndicator />;
-  if (!session) return <Redirect href={"/auth"} />;
+  // if (mounting) return <ActivityIndicator />;
+  // if (!session) return <Redirect href={"/auth"} />;
   return (
     <SafeAreaView edges={["top"]} style={styles.safeArea}>
       <Tabs
