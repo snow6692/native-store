@@ -73,6 +73,7 @@ export const getCategoryAndProducts = (categorySlug: string) => {
   });
 };
 
+// for orders page
 export const getMyOrders = () => {
   const {
     user: { id },
@@ -131,6 +132,7 @@ export const createOrder = () => {
     },
   });
 };
+
 export const createOrderItem = () => {
   return useMutation({
     async mutationFn(
@@ -165,14 +167,10 @@ export const createOrderItem = () => {
       await Promise.all(
         Object.entries(productQuantities).map(
           async ([productId, totalQuantity]) => {
-            let { data, error } = await supabase.rpc(
-              "decrement_product_quantity",
-              {
-                product_id: Number(productId),
-                quantity: totalQuantity,
-              }
-            );
-            if (error) console.log("Error --->>> " + error.message);
+            supabase.rpc("decrement_product_quantity", {
+              product_id: Number(productId),
+              quantity: totalQuantity,
+            });
           }
         )
       );
@@ -180,6 +178,32 @@ export const createOrderItem = () => {
       if (error)
         throw new Error(
           "An error occurred while creating order item: " + error.message
+        );
+
+      return data;
+    },
+  });
+};
+
+//For order details page
+export const getMyOrder = (slug: string) => {
+  const {
+    user: { id },
+  } = useAuth();
+
+  return useQuery({
+    queryKey: ["order", slug],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("order")
+        .select("*, order_items:order_item(*, products:product(*))")
+        .eq("slug", slug)
+        .eq("user", id)
+        .single();
+
+      if (error || !data)
+        throw new Error(
+          "An error occurred while fetching data: " + error.message
         );
 
       return data;
