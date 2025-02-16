@@ -19,7 +19,6 @@ const Home = () => {
       <Text>Error fetching data {error?.message || "An error occurred"} </Text>
     );
 
-  console.log(data);
   return (
     <View>
       <FlatList

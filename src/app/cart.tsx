@@ -11,6 +11,7 @@ import {
 import React from "react";
 import { CartItemType, useCartStore } from "../store/cartStore";
 import { StatusBar } from "expo-status-bar";
+import { createOrder, createOrderItem } from "../api/api";
 
 type CartItemProps = {
   item: CartItemType;
@@ -57,19 +58,47 @@ const CartItem = ({
 };
 
 const Cart = () => {
-  const { items, removeItem, incrementItem, decrementItem, getTotalPrice } =
-    useCartStore();
+  const {
+    items,
+    removeItem,
+    incrementItem,
+    decrementItem,
+    getTotalPrice,
+    resetCart,
+  } = useCartStore();
 
-  const handleCheckout = () => {
-    if (Platform.OS === "web") {
-      window.alert(`Proceeding to Checkout\nTotal amount: $${getTotalPrice()}`);
-    } else {
-      Alert.alert(
-        "Proceeding to Checkout",
-        `Total amount: $${getTotalPrice()}`
+  const { mutate: createSupabaseOrder } = createOrder();
+  const { mutate: createSupabaseOrderItem } = createOrderItem();
+  const handleCheckout = async () => {
+    const totalPrice = parseFloat(getTotalPrice());
+
+    try {
+      await createSupabaseOrder(
+        { totalPrice },
+        {
+          onSuccess: (data) => {
+            createSupabaseOrderItem(
+              items.map((item) => ({
+                orderId: data.id,
+                productId: item.id,
+                quantity: item.quantity,
+              })),
+              {
+                onSuccess: () => {
+                  alert("Order Created Successfully");
+                  resetCart();
+                },
+              }
+            );
+          },
+        }
       );
+    } catch (error) {
+      console.log(error);
+      Alert.alert("An error occurred while creating order");
     }
   };
+
   return (
     <View style={styles.container}>
       <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
